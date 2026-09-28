@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CategoryAction from '@/components/CategoryAction.vue';
 import CreateCategoryDialog from '@/components/CreateCategoryDialog.vue';
 import { Card } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -20,6 +21,7 @@ const { data: categories } = useCategories();
             <TableHead>No</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Description</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -27,6 +29,9 @@ const { data: categories } = useCategories();
             <TableCell> {{ index + 1 }} </TableCell>
             <TableCell> {{ category.name }} </TableCell>
             <TableCell> {{ category.description }} </TableCell>
+            <TableCell>
+              <CategoryAction :category="category" />
+            </TableCell>
           </TableRow>
         </TableBody>
       </Table>

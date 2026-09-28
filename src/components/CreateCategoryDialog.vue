@@ -33,6 +33,9 @@
         </div>
       </form>
       <DialogFooter>
+        <DialogClose as-child>
+          <Button variant="outline">Cancel</Button>
+        </DialogClose>
         <Button :loading="isPending" @click="handleSubmit">
           {{ isPending ? 'Creating...' : 'Create' }}
         </Button>
@@ -42,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useCreateCategory } from '@/features/categories/mutations/use-create-category';
 import { ref, watch } from 'vue';
 import { Label } from './ui/label';
