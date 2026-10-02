@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { Button } from '@/components/ui/button'
 
 const route = useRoute()
 const router = useRouter()
@@ -21,17 +22,25 @@ const goHome = () => {
 </script>
 
 <template>
-  <main class="error-layout">
-    <div class="error-content">
-      <span>{{ statusCode }}</span>
+  <main class="min-h-screen flex flex-col justify-center items-center text-center px-4 bg-background">
+    <div class="flex flex-col items-center max-w-md space-y-4">
+      <span class="text-7xl font-extrabold tracking-tight text-primary">
+        {{ statusCode }}
+      </span>
 
-      <h1>{{ title }}</h1>
+      <h1 class="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+        {{ title }}
+      </h1>
 
-      <p>{{ message }}</p>
+      <p class="text-sm text-muted-foreground">
+        {{ message }}
+      </p>
 
-      <button @click="goHome">
-        Go to Dashboard
-      </button>
+      <div class="pt-2">
+        <Button @click="goHome">
+          Go to Dashboard
+        </Button>
+      </div>
     </div>
   </main>
 </template>
