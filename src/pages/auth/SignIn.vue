@@ -59,7 +59,7 @@ const handleSubmit = async () => {
     }
 
     toast.success("You're signed in");
-    await router.push({ name: 'home' });
+    await router.push({ name: 'dashboard' });
   } catch (e: any){
     console.error(e);
   } finally {
