@@ -17,59 +17,69 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar'
 import { useAuthStore } from '@/stores/auth.store'
+import { computed } from 'vue'
 
 const props = withDefaults(defineProps<SidebarProps>(), {
   collapsible: "icon",
 })
 
-const authStore = useAuthStore();
-const { name, email } = authStore.user ?? { name: '', email: '' };
+const authStore = useAuthStore()
 
-// This is sample data.
-const data = {
-  user: {
-    name,
-    email,
-    avatar: "/avatars/shadcn.jpg",
+const user = computed(() => ({
+  name: authStore.user?.name ?? '',
+  email: authStore.user?.email ?? '',
+  avatar: "/avatars/shadcn.jpg",
+}))
+
+const teams = [
+  {
+    name: "Acme Inc",
+    logo: GalleryVerticalEnd,
+    plan: "Enterprise",
   },
-  teams: [
+]
+
+const navMain = computed(() => {
+  const mainMenuChildren = [
     {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
+      title: "Dashboard",
+      url: "/dashboard",
     },
-  ],
-  navMain: [
+    {
+      title: "Tickets",
+      url: "/dashboard/tickets",
+    },
+  ]
+
+  if (authStore.isAdmin) {
+    mainMenuChildren.push({
+      title: "Categories",
+      url: "/dashboard/categories",
+    })
+  }
+
+  return [
     {
       title: "Main Menu",
       url: "#",
       icon: SquareTerminal,
       isActive: true,
-      items: [
-        {
-          title: "Dashboard",
-          url: "/dashboard",
-        },
-        {
-          title: "Categories",
-          url: "/dashboard/categories",
-        },
-      ],
+      items: mainMenuChildren,
     },
-  ],
-}
+  ]
+})
 </script>
 
 <template>
   <Sidebar v-bind="props">
     <SidebarHeader>
-      <TeamSwitcher :teams="data.teams" />
+      <TeamSwitcher :teams="teams" />
     </SidebarHeader>
     <SidebarContent>
-      <NavMain :items="data.navMain" />
+      <NavMain :items="navMain" />
     </SidebarContent>
     <SidebarFooter>
-      <NavUser :user="data.user" />
+      <NavUser :user="user" />
     </SidebarFooter>
     <SidebarRail />
   </Sidebar>

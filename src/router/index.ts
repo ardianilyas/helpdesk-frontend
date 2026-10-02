@@ -9,6 +9,8 @@ import NotFound from "@/pages/errors/NotFound.vue";
 import DashboardLayout from "@/layouts/DashboardLayout.vue";
 import DashboardIndex from "@/pages/dashboard/DashboardIndex.vue";
 import Categories from "@/pages/dashboard/Categories.vue";
+import Tickets from "@/pages/dashboard/Tickets.vue";
+import SignUp from "@/pages/auth/SignUp.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -62,6 +64,16 @@ const router = createRouter({
             title: 'Good to see you again',
             description: 'Sign in and pick up where you left off.'
           }
+        },
+        {
+          path: 'signup',
+          name: 'signup',
+          component: SignUp,
+          meta: {
+            requiresGuest: true,
+            title: 'Create an account',
+            description: 'Sign up and start creating tickets.'
+          }
         }
       ]
     },
@@ -78,15 +90,35 @@ const router = createRouter({
           component: DashboardIndex,
         },
         {
+          path: 'tickets',
+          name: 'tickets',
+          component: Tickets,
+          meta: {
+            title: 'Tickets',
+            description: 'Manage your tickets.'
+          }
+        },
+        {
           path: 'categories',
           name: 'categories',
           component: Categories,
           meta: {
+            requiresAdmin: true,
             title: 'Categories',
             description: 'Manage your categories.'
           }
         }
       ]
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found-wildcard',
+      component: NotFound,
+      meta: {
+        statusCode: 404,
+        errorTitle: 'Page Not Found',
+        errorMessage: 'The page you are looking for does not exist.',
+      },
     }
   ],
 });
@@ -101,6 +133,12 @@ router.beforeEach(async (to) => {
   if(to.meta.requiresAuth && !authStore.user) {
     return {
       name: 'signin'
+    }
+  }
+
+  if(to.matched.some(record => record.meta.requiresAdmin) && !authStore.isAdmin) {
+    return {
+      name: 'forbidden'
     }
   }
 
