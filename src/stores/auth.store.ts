@@ -14,6 +14,10 @@ export const useAuthStore = defineStore('auth', {
     initialized: false,
   }),
 
+  getters: {
+    isAdmin: (state) => state.user?.role === 'admin',
+  },
+
   actions: {
     async initialize() {
       const { data: session } = await authClient.getSession()
@@ -37,6 +41,14 @@ export const useAuthStore = defineStore('auth', {
 
     clearUser() {
       this.user = null
+    },
+
+    async logout() {
+      try {
+        await authClient.signOut();
+      } finally {
+        this.clearUser();
+      }
     },
   },
 

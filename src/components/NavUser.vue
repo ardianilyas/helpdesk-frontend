@@ -7,7 +7,21 @@ import {
   LogOut,
   Sparkles,
 } from "@lucide/vue"
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { toast } from 'vue-sonner'
+import { useAuthStore } from '@/stores/auth.store'
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import {
   Avatar,
   AvatarFallback,
@@ -29,7 +43,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar'
 
-const props = defineProps<{
+defineProps<{
   user: {
     name: string
     email: string
@@ -38,6 +52,26 @@ const props = defineProps<{
 }>()
 
 const { isMobile } = useSidebar()
+const authStore = useAuthStore()
+const router = useRouter()
+
+const showLogoutDialog = ref(false)
+const isLoggingOut = ref(false)
+
+const handleLogout = async () => {
+  isLoggingOut.value = true
+  try {
+    await authStore.logout()
+    showLogoutDialog.value = false
+    toast.success('Logged out successfully')
+    router.push({ name: 'signin' })
+  } catch (error) {
+    console.error('Logout error:', error)
+    toast.error('Failed to log out. Please try again.')
+  } finally {
+    isLoggingOut.value = false
+  }
+}
 </script>
 
 <template>
@@ -52,7 +86,7 @@ const { isMobile } = useSidebar()
             <Avatar class="h-8 w-8 rounded-lg">
               <AvatarImage :src="user.avatar" :alt="user.name" />
               <AvatarFallback class="rounded-lg">
-                CN
+                {{ user.name ? user.name.slice(0, 2).toUpperCase() : 'CN' }}
               </AvatarFallback>
             </Avatar>
             <div class="grid flex-1 text-left text-sm leading-tight">
@@ -73,7 +107,7 @@ const { isMobile } = useSidebar()
               <Avatar class="h-8 w-8 rounded-lg">
                 <AvatarImage :src="user.avatar" :alt="user.name" />
                 <AvatarFallback class="rounded-lg">
-                  CN
+                  {{ user.name ? user.name.slice(0, 2).toUpperCase() : 'CN' }}
                 </AvatarFallback>
               </Avatar>
               <div class="grid flex-1 text-left text-sm leading-tight">
@@ -105,7 +139,7 @@ const { isMobile } = useSidebar()
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
+          <DropdownMenuItem @select="showLogoutDialog = true">
             <LogOut />
             Log out
           </DropdownMenuItem>
@@ -113,4 +147,29 @@ const { isMobile } = useSidebar()
       </DropdownMenu>
     </SidebarMenuItem>
   </SidebarMenu>
+
+  <AlertDialog :open="showLogoutDialog" @update:open="showLogoutDialog = $event">
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>
+          Are you sure you want to log out?
+        </AlertDialogTitle>
+        <AlertDialogDescription>
+          You will need to sign in again to access your account.
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel :disabled="isLoggingOut">
+          Cancel
+        </AlertDialogCancel>
+        <AlertDialogAction
+          variant="destructive"
+          :disabled="isLoggingOut"
+          @click.prevent="handleLogout"
+        >
+          {{ isLoggingOut ? 'Logging out...' : 'Log out' }}
+        </AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
 </template>
